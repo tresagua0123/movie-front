@@ -1,25 +1,92 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import styled from "styled-components"
 import './App.css';
+import axios from 'axios';
+import { SampleCard } from "./components/Card";
+import { Buttons } from "./components/Buttons";
 
-function App() {
+const TotalWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const CardsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+`;
+
+const CardHolder = styled.div`
+  margin-right: 6px;
+`;
+
+const App = () => {
+
+  const [movieDataArraysObj, setmovieDataArraysObj] = useState([]);
+
+    const getAxiosResult = () => {
+      axios.get(`${process.env.REACT_APP_MOVIE_API_ENDPOINT}/api/v1/movies`)
+      .then((res) => {
+        makemovieDataArraysObj(res.data)}
+        );
+    }
+
+    const makemovieDataArraysObj = (data) => {
+      const movieDataArraysObjResult = [];
+      console.log(movieDataArraysObjResult);
+
+     data.forEach((elm, index) => {
+        movieDataArraysObjResult.push(elm);
+      })
+      console.log(movieDataArraysObjResult);
+      setmovieDataArraysObj(movieDataArraysObjResult);
+    }
+
+    const alignCards = (data) => {
+      const rowsWith3CardsNum = Math.floor(data.length /3);
+      const restCardsNum = (data.length % 3);
+
+      return (
+        <CardsWrapper>
+        {data.map((_data, i) => {
+          return (
+            <CardHolder><SampleCard 
+            name={data[i].title}
+            releaseDate={data[i].release_date}
+            plot={data[i].plot}
+            /> </ CardHolder>
+          )
+        })}
+        </CardsWrapper>
+      )
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <TotalWrapper>
+      <div onClick={() => getAxiosResult()}>
+      <Buttons/>
+      </div>
+      </TotalWrapper>
+      {/* <CardsWrapper>
+      <CardHolder>
+      <SampleCard name="chinko"/>
+      </CardHolder>
+      <CardHolder>
+      <SampleCard name="chinko"/>
+      </CardHolder>
+      <CardHolder>
+      <SampleCard name="chinko"/>
+      </CardHolder>
+      <SampleCard name={"unko"}/>
+      </CardsWrapper> */}
+      {/* {movieDataArraysObj.map((elm) => {
+        return <SampleCard key={elm} name={elm.name}/>
+      })} */}
+      {alignCards(movieDataArraysObj)}
+  </>
+  )
 }
 
 export default App;

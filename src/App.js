@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components"
 import './App.css';
 import axios from 'axios';
@@ -62,9 +62,51 @@ const App = () => {
       )
   }
 
+  const initSignInButton = (gapi) => {
+    gapi.load("auth2", () => {
+      gapi.auth2.init({client_id: "520135566480-3vhfu46ml7asej7m25fkglqncjrccm2g.apps.googleusercontent.com"})
+        .then(
+          (result) => {
+            gapi.signin2.render("google-signin-button", {
+              "onsuccess": onSignIn,
+              "onfailure": (err) => console.log(err)
+            });
+          },
+          (err) => console.error(err),
+        )
+    })
+  }
+
+  function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+    const id_token = googleUser.getAuthResponse().id_token;
+    console.log("id_token:", id_token);
+  }
+
+  const downloadGoogleScript = (callback) => {
+    const element = document.getElementsByTagName("script")[0];
+    const js = document.createElement("script");
+    js.id = "google-platform";
+    js.src = "//apis.google.com/js/platform.js";
+    js.async = true;
+    js.defer = true;
+    element.parentNode.insertBefore(js, element);
+    js.onload = () => callback(window.gapi);
+  }
+
+  useEffect(() => {
+    downloadGoogleScript(initSignInButton)
+  })
+
   return (
     <>
       <TotalWrapper>
+      <div id="google-signin-button"></div>
       <div onClick={() => getAxiosResult()}>
       <Buttons/>
       </div>

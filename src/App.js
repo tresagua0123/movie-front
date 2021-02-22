@@ -64,7 +64,7 @@ const App = () => {
 
   const initSignInButton = (gapi) => {
     gapi.load("auth2", () => {
-      gapi.auth2.init({client_id: "520135566480-3vhfu46ml7asej7m25fkglqncjrccm2g.apps.googleusercontent.com"})
+      gapi.auth2.init({client_id: process.env.REACT_APP_CLIENT_ID})
         .then(
           (result) => {
             gapi.signin2.render("google-signin-button", {
